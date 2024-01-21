@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { SocketGateway } from './socket/socket.gateway';
-import { MessagesGateway } from './gateways/messages/messages.gateway';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from 'db/data-source';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
   controllers: [AppController],
-  // providers: [AppService, SocketGateway],
-  providers: [AppService, MessagesGateway],
+  providers: [AppService],
 })
 export class AppModule {}
