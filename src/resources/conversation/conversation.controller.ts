@@ -1,38 +1,45 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 
-@Controller()
+@Controller('conversation')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
-  @MessagePattern('createConversation')
-  create(@Payload() createConversationDto: CreateConversationDto) {
+  @Post()
+  create(@Body() createConversationDto: CreateConversationDto) {
     return this.conversationService.create(createConversationDto);
   }
 
-  @MessagePattern('findAllConversation')
+  @Get()
   findAll() {
     return this.conversationService.findAll();
   }
 
-  @MessagePattern('findOneConversation')
-  findOne(@Payload() id: number) {
-    return this.conversationService.findOne(id);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.conversationService.findOne(+id);
   }
 
-  @MessagePattern('updateConversation')
-  update(@Payload() updateConversationDto: UpdateConversationDto) {
-    return this.conversationService.update(
-      updateConversationDto.id,
-      updateConversationDto,
-    );
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() pdateConversationDto: UpdateConversationDto,
+  ) {
+    return this.conversationService.update(+id, pdateConversationDto);
   }
 
-  @MessagePattern('removeConversation')
-  remove(@Payload() id: number) {
-    return this.conversationService.remove(id);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.conversationService.remove(+id);
   }
 }
