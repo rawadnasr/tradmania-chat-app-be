@@ -1,3 +1,4 @@
+import { Message } from 'src/resources/message/entities/message.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import {
   Entity,
@@ -5,6 +6,7 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -18,4 +20,7 @@ export class Conversation {
   @ManyToMany(() => User)
   @JoinTable()
   users: User[];
+
+  @OneToMany(() => Message, (message) => message.conversation)
+  messages: Message[];
 }
