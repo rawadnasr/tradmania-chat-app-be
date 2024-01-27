@@ -4,21 +4,19 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
-  JoinTable,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity()
 export class Conversation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @ManyToMany(() => User)
-  @JoinTable()
   users: User[];
 
   @OneToMany(() => Message, (message) => message.conversation)
