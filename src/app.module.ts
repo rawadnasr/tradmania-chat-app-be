@@ -1,13 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { SocketGateway } from './socket/socket.gateway';
-import { MessagesGateway } from './gateways/messages/messages.gateway';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from 'db/data-source';
+import { ConversationModule } from './resources/conversation/conversation.module';
+import { MessageModule } from './resources/message/message.module';
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    ConversationModule,
+    MessageModule,
+  ],
   controllers: [AppController],
-  // providers: [AppService, SocketGateway],
-  providers: [AppService, MessagesGateway],
+  providers: [AppService],
 })
 export class AppModule {}
