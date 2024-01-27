@@ -21,7 +21,7 @@ export class MessageService {
     return this.messageRepository.find();
   }
 
-  async findOne(id: number): Promise<Message | undefined> {
+  async findOne(id: string): Promise<Message | undefined> {
     const message = await this.messageRepository.findOneBy({ id });
 
     if (!message) {
@@ -31,7 +31,7 @@ export class MessageService {
     return message;
   }
 
-  async update(id: number, updateMessageDto: UpdateMessageDto) {
+  async update(id: string, updateMessageDto: UpdateMessageDto) {
     const message = await this.findOne(id);
     return this.messageRepository.save({
       ...message,
@@ -39,7 +39,7 @@ export class MessageService {
     });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     this.messageRepository.delete(id);
   }
 }
