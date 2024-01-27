@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -29,7 +25,8 @@ export class UsersService {
     return this.usersRepository.save(newUser);
   }
 
-  findAll(): Promise<User[]> {
+  async findAll(username?: string): Promise<User[]> {
+    if (username) return [await this.findOne(username)];
     return this.usersRepository.find();
   }
 
@@ -37,27 +34,28 @@ export class UsersService {
     return this.usersRepository.findOneBy({ username });
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
+  async findOneById(id: string): Promise<User | undefined> {
     const user = await this.usersRepository.findOneBy({ id });
-
-    if (!user) {
-      throw new BadRequestException("User doesn't exit");
-    }
-
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, userId: number) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOneById(id);
-
-    if (user.id !== userId) throw new UnauthorizedException();
-
     return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
-  async remove(id: number, userId: number): Promise<void> {
-    const user = await this.findOneById(id);
-    if (user.id !== userId) throw new UnauthorizedException();
+  async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+
+  async getUserConversations(userId: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['conversations'],
+    });
+    if (!user) {
+      return null;
+    }
+    return user.conversations;
   }
 }
