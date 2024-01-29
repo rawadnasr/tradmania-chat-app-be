@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { CommonResponseInterceptor } from 'src/interceptor/commonResponse.interceptor';
+import { QueryDto } from './dto/query.dto';
 
 @UseInterceptors(CommonResponseInterceptor)
 @Controller('conversation')
@@ -19,8 +21,14 @@ export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
   @Post()
-  create(@Body() createConversationDto: CreateConversationDto) {
-    return this.conversationService.create(createConversationDto);
+  create(
+    @Body() createConversationDto: CreateConversationDto,
+    @Query() query: QueryDto,
+  ) {
+    return this.conversationService.create(
+      createConversationDto,
+      query?.userId,
+    );
   }
 
   @Get()
