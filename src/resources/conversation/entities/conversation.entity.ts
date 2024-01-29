@@ -6,6 +6,7 @@ import {
   Column,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -13,11 +14,12 @@ export class Conversation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @ManyToMany(() => User)
-  users: User[];
+  @ManyToMany(() => User, (user) => user.conversations)
+  @JoinTable({ name: 'conversation_participants' })
+  participants: User[];
 
   @OneToMany(() => Message, (message) => message.conversation)
   messages: Message[];

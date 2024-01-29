@@ -1,7 +1,13 @@
 import { MessageType } from 'src/models/enums';
 import { Conversation } from 'src/resources/conversation/entities/conversation.entity';
 import { User } from 'src/resources/users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Message {
@@ -25,4 +31,7 @@ export class Message {
 
   @ManyToOne(() => Conversation, (conversation) => conversation.messages)
   conversation: Conversation;
+
+  @CreateDateColumn()
+  createdAt: Date; // Creation date
 }

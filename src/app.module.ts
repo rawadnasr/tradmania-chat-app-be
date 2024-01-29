@@ -8,6 +8,7 @@ import { MessageModule } from './resources/message/message.module';
 import { UsersModule } from './resources/users/users.module';
 import { LikeModule } from './resources/like/like.module';
 import { MatchModule } from './resources/match/match.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MatchModule } from './resources/match/match.module';
     MessageModule,
     LikeModule,
     MatchModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

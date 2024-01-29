@@ -5,8 +5,6 @@ import { Conversation } from './entities/conversation.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
-import { MessageService } from '../message/message.service';
-import { CreateMessageDto } from '../message/dto/create-message.dto';
 
 @Injectable()
 export class ConversationService {
@@ -14,10 +12,11 @@ export class ConversationService {
     @InjectRepository(Conversation)
     private conversationRepository: Repository<Conversation>,
     private readonly usersService: UsersService,
-    private readonly messageService: MessageService,
   ) {}
 
-  create(createConversationDto: CreateConversationDto) {
+  async create(createConversationDto: CreateConversationDto, userId?: string) {
+    const user = await this.usersService.findOneById(userId);
+    if (user) createConversationDto.users = [user];
     const conversation = this.conversationRepository.create(
       createConversationDto,
     );
@@ -29,11 +28,16 @@ export class ConversationService {
   }
 
   async findOne(id: string): Promise<Conversation | undefined> {
-    const conversation = await this.conversationRepository.findOneBy({ id });
+    const conversation = await this.conversationRepository.findOne({
+      where: { id },
+      relations: ['participants', 'messages', 'messages.user'],
+    });
 
     if (!conversation) {
       throw new BadRequestException("conversation doesn't exit");
     }
+
+    conversation.messages = conversation.messages.reverse();
 
     return conversation;
   }
@@ -50,38 +54,20 @@ export class ConversationService {
     this.conversationRepository.delete(id);
   }
 
-  async createConversationAndMessage(
-    senderId: string,
-    recipientId: string,
-    message: CreateMessageDto,
-  ) {
-    // Retrieve sender and recipient users
-    const sender = await this.usersService.findOneById(senderId);
-    const recipient = await this.usersService.findOneById(recipientId);
+  async getOrCreateConversation(senderId: string, recipientId: string) {
+    let conversation = await this.usersService.getUsersConversation(
+      senderId,
+      recipientId,
+    );
 
-    // Check if a conversation exists
-    let conversation = await this.conversationRepository
-      .createQueryBuilder('conversation')
-      .leftJoinAndSelect('conversation.users', 'users')
-      .where('users.id IN (:...userIds)', { userIds: [senderId, recipientId] })
-      .groupBy('conversation.id')
-      .having('COUNT(DISTINCT users.id) = 2')
-      .getOne();
-
-    // If a conversation doesn't exist, create a new one
     if (!conversation) {
+      const sender = await this.usersService.findOneById(senderId);
+      const recipient = await this.usersService.findOneById(recipientId);
       conversation = new Conversation();
-      conversation.users = [sender, recipient];
+      conversation.participants = [sender, recipient];
       await this.conversationRepository.save(conversation);
     }
 
-    // Create a new message
-    message.user = sender;
-    message.conversation = conversation;
-
-    // Save the message
-    await this.messageService.create(message);
-
-    return { conversation, message };
+    return conversation;
   }
 }

@@ -1,6 +1,6 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class QueryDto {
-  @IsNotEmpty()
+  @IsOptional()
   userId: string;
 }

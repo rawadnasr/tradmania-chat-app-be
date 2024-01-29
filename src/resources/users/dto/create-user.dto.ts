@@ -7,6 +7,9 @@ export class CreateUserDto {
   @IsOptional()
   lastName: string;
 
+  @IsOptional()
+  imageUrl: string;
+
   @IsNotEmpty()
   username: string;
 }

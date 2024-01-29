@@ -53,7 +53,12 @@ export class UsersController {
   }
 
   @Get(':id/conversation')
-  async getUserConversations(@Param('id') userId: string) {
+  async getUserConversations(
+    @Param('id') userId: string,
+    @Query() query: QueryDto,
+  ) {
+    if (query?.recipientId)
+      return this.usersService.getUsersConversation(userId, query.recipientId);
     return this.usersService.getUserConversations(userId);
   }
 }
