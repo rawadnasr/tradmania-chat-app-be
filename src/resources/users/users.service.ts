@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,7 +14,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const user = await this.usersRepository.findOneBy({
@@ -51,11 +55,32 @@ export class UsersService {
   async getUserConversations(userId: string) {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
-      relations: ['conversations'],
+      relations: [
+        'conversations',
+        'conversations.participants',
+        'conversations.messages',
+        'conversations.messages.user',
+      ],
     });
     if (!user) {
-      return null;
+      throw new NotFoundException();
     }
+
     return user.conversations;
+  }
+
+  async getUsersConversation(senderId: string, recipientId: string) {
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.conversations', 'conversation')
+      .where('user.id = :senderId', { senderId })
+      .andWhere('user.id = :recipientId', { recipientId })
+      .getOne();
+
+    if (!user) {
+      return undefined;
+    }
+
+    return user.conversations[0];
   }
 }
