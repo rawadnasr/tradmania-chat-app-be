@@ -24,11 +24,12 @@ export class CommonResponseInterceptor<T>
     return next.handle().pipe(
       map((data) => {
         const response = context.switchToHttp().getResponse();
-        return {
-          statusCode: response.statusCode,
-          message: response.statusMessage ?? '',
-          data: data,
-        };
+        return data
+        // return {
+        //   statusCode: response.statusCode,
+        //   message: response.statusMessage ?? '',
+        //   data: data,
+        // };
       }),
     ) as Observable<Response<T>>;
   }
