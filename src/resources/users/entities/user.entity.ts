@@ -23,12 +23,15 @@ export class User {
   username: string;
 
   @Column({ nullable: true })
+  imageUrl: string;
+
+  @Column({ nullable: true })
   firstName: string;
 
   @Column({ nullable: true })
   lastName: string;
 
-  @ManyToMany(() => Conversation, (conversation) => conversation.users)
+  @ManyToMany(() => Conversation, (conversation) => conversation.participants)
   @JoinTable({ name: 'user_conversations' })
   conversations: Conversation[];
 
@@ -48,13 +51,13 @@ export class User {
   matches2: Match[];
 
   @CreateDateColumn()
-  created_at: Date; // Creation date
+  createdAt: Date; // Creation date
 
   @UpdateDateColumn()
-  updated_at: Date; // Last updated date
+  updatedAt: Date; // Last updated date
 
   @DeleteDateColumn()
-  deleted_at: Date; // Deletion date
+  deletedAt: Date; // Deletion date
 
   @Column({ default: true })
   isActive: boolean;
