@@ -36,13 +36,13 @@ $ npm install
 
 Create .env file and add the following variables:
 
-NODE_ENV=local
-DATABASE_TYPE=mysql
-DATABASE_HOST=localhost
-DATABASE_PORT=3306
-DATABASE_USER=add_your_username
-DATABASE_PASSWORD=add_your_password
-DATABASE_NAME=add_your_database
+- NODE_ENV=local
+- DATABASE_TYPE=mysql
+- DATABASE_HOST=localhost
+- DATABASE_PORT=3306
+- DATABASE_USER=add_your_username
+- DATABASE_PASSWORD=add_your_password
+- DATABASE_NAME=add_your_database
 
 ```bash
 # development
